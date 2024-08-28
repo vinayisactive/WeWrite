@@ -12,7 +12,7 @@ blogRoutes.post("/", async({req, res}) => {
 
 
 
-blogRoutes.get("/", async({req, res}) => {
+blogRoutes.get("/:id", async({req, res}) => {
     try {
         
     } catch (error) {
@@ -21,7 +21,16 @@ blogRoutes.get("/", async({req, res}) => {
 }); 
 
 
-blogRoutes.patch("/", async({req, res}) => {
+blogRoutes.patch("/:id", async({req, res}) => {
+    try {
+        
+    } catch (error) {
+        
+    }
+}); 
+
+
+blogRoutes.delete("/:id", async({req, res}) => {
     try {
         
     } catch (error) {
