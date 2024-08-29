@@ -14,6 +14,9 @@ const getBlogs = async(c: Context) => {
     try {
         const db = createPrismaClient(c.env.DATABASE_URL); 
 
+        return new Response(c.env.DATABASE_URL); 
+
+        
     } catch (error) {
         
     }
@@ -40,6 +43,8 @@ const updateBlog = async(c: Context) => {
 const deleteBlog = async(c: Context) => {
     try {
         const db = createPrismaClient(c.env.DATABASE_URL); 
+
+        
 
     } catch (error) {
         
