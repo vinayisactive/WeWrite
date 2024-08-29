@@ -1,8 +1,8 @@
 import { Hono } from "hono";
-import { ENV } from "../types/env";
+import { Bindings } from "../types/interfaces";
 import { getUser, getUserById, updateUserDetails } from "../controllers/user.controllers";
 
-const userRoutes = new Hono<{ Bindings : ENV }>(); 
+const userRoutes = new Hono<{ Bindings : Bindings }>(); 
 
 userRoutes.get("/", getUser); 
 userRoutes.get("/:id", getUserById); 

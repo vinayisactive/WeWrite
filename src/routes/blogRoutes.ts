@@ -1,8 +1,8 @@
 import { Hono } from "hono";
-import { ENV } from "../types/env";
+import { Bindings } from "../types/interfaces";
 import { createBlog, deleteBlog, getBlog, updateBlog, getBlogs } from "../controllers/blog.controllers";
 
-const blogRoutes = new Hono<{ Bindings : ENV }>(); 
+const blogRoutes = new Hono<{ Bindings : Bindings }>(); 
 
 blogRoutes.post("/", createBlog); 
 blogRoutes.get("/", getBlogs); 

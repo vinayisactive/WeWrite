@@ -1,10 +1,10 @@
 import { Hono } from "hono";
-import { ENV } from "../types/env";
 import authRoutes from "./authRoutes";
 import userRoutes from "./userRoutes";
 import blogRoutes from "./blogRoutes";
+import { Bindings } from "../types/interfaces";
 
-const apiV1Router = new Hono<{Bindings: ENV}>(); 
+const apiV1Router = new Hono<{ Bindings: Bindings }>(); 
 
 apiV1Router.route("/auth", authRoutes); 
 apiV1Router.route("/user", userRoutes); 

@@ -1,10 +1,10 @@
 import { Hono } from "hono";
-import { ENV } from "../types/env";
+import { Bindings } from "../types/interfaces";
 import { singin, signup } from "../controllers/auth.controllers";
 
-const authRoutes = new Hono(); 
+const authRoutes = new Hono<{ Bindings: Bindings }>(); 
 
-authRoutes.post("/singup", signup); 
-authRoutes.post("/singin", singin); 
+authRoutes.post("/signup", signup); 
+authRoutes.post("/signin", singin); 
  
 export default authRoutes; 
