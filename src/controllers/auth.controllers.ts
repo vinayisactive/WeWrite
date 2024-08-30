@@ -1,14 +1,19 @@
 import { Context } from "hono"
 import { createPrismaClient } from "../config/database";
-import { signupSchema } from "../types/zod";
+import { signupSchema, singinSchema } from "../types/zod";
 import { sign, verify, decode } from "hono/jwt";
-import {tokenExp} from "../utilities/timeUtil";
+import { tokenExp } from "../utilities/timeUtil";
+import bcryptjs from 'bcryptjs'
 
 const signup = async(c: Context) => {
+    const body = await c.req.json(); 
     try {
-        const db = createPrismaClient(c.env.DATABASE_URL); 
-        const body = await c.req.json(); 
+        const { DATABASE_URL, JWT_SECRET } = c.env;
+        if (!DATABASE_URL || !JWT_SECRET) {
+            return c.json({ message: "Server configuration error" }, 500);
+        }
 
+        const db = createPrismaClient(DATABASE_URL); 
         const userData = signupSchema.safeParse(body); 
 
         if(!userData.success){
@@ -27,11 +32,13 @@ const signup = async(c: Context) => {
             }, 409); 
         }
 
+        const hashedPassword = await bcryptjs.hash(password,12); 
+
         const user = await db.user.create({
             data: {
                 email,
                 username, 
-                password
+                password: hashedPassword
             }
         }); 
 
@@ -41,7 +48,7 @@ const signup = async(c: Context) => {
             }, 500); 
         }; 
 
-        const token = await sign({ email: user.email, id: user.id, exp: tokenExp }, c.env.JWT_SECRET); 
+        const token = await sign({ email: user.email, id: user.id, exp: tokenExp }, JWT_SECRET); 
         if(!token){
             return c.json({
                 message: "Failed to create token",
@@ -52,31 +59,80 @@ const signup = async(c: Context) => {
             message: "User created successfully",
             data: {
                 id: user.id,
-                username: user.username
+                username: user.username,
+                token: token
             },
-            token: token
         }, 200); 
 
+    
     } catch (error) {
+        console.log(error); 
+
         return c.json({
-            message: "Failed to register user",
-            error: error
-        }, 500); 
+            message: "Failed to signup user",
+            error: error instanceof Error ? error.message : "Internal server error",
+        },500);
     }
 }; 
-
-
 
 const singin = async(c: Context) => {
-    try {
-        const db = createPrismaClient(c.env.DATABASE_URL); 
+    const body = await c.req.json(); 
 
+    try {
+        const { DATABASE_URL, JWT_SECRET } = c.env;
+        if (!DATABASE_URL || !JWT_SECRET) {
+            return c.json({ message: "Server configuration error" }, 500);
+        }
+
+        const db = createPrismaClient(DATABASE_URL); 
+
+        const userData = singinSchema.safeParse(body); 
+        if(!userData.success){
+            return c.json({
+                message: "Invalid input values",
+                error : userData.error.flatten()
+            },400); 
+        }
+
+        const user = await db.user.findUnique({
+            where: {
+                email: userData.data?.email
+            }
+        }); 
+        
+        if(!user){
+            return c.json({ message: "No user exists"}, 404); 
+        }; 
+
+        const isPasswordCorrect = await bcryptjs.compare(userData.data.password, user?.password); 
+        if(!isPasswordCorrect){
+            return c.json({ message: "Incorrect password" },401); 
+        }
+
+        const token = await sign({ email: user.email, id: user.id, exp: tokenExp }, JWT_SECRET); 
+        if(!token){
+            c.json({ message: "Failed to create token" }, 500);
+        }
+
+        return c.json({
+            message: "User signin successfully",
+            data : {
+                id: user.id,
+                username: user.username,
+                email: user.email,
+                token: token
+            }
+        },200);
 
     } catch (error) {
+        console.log(error);
         
+            return c.json({
+                message: "Failed to signin user",
+                error: error instanceof Error ? error.message : "Internal server error",
+            },500);
     }
 }; 
-
 
 export {
     signup, 
