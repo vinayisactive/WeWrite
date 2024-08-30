@@ -41,7 +41,7 @@ export const authMiddleware = async(c: Context, next: Next) => {
             {
               message: "Invalid token or authentication error",
             },
-            401
+            403
           );
         }
 }; 
