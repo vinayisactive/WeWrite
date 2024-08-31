@@ -40,6 +40,7 @@ export const authMiddleware = async(c: Context, next: Next) => {
         return c.json(
             {
               message: "Invalid token or authentication error",
+              error: error instanceof Error ? error.message : "Internal server error",
             },
             403
           );
