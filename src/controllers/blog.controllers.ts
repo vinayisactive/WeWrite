@@ -68,6 +68,23 @@ const getBlogs = async(c: Context) => {
         const blogs = await db.blog.findMany({
             where: {
                 published: true
+            },
+            select: {
+                title: true,
+                description: true,
+                content:true,
+                category: true,
+                published: true,
+                author: {
+                    select:{
+                        id: true,
+                        username: true,
+                        firstName: true,
+                        lastName: true,
+                        email: true
+                    }
+                },
+                createdAt: true
             }
         }); 
 
@@ -112,6 +129,23 @@ const getBlog = async(c: Context) => {
         const blog = await db.blog.findUnique({
             where: {
                 id: blogId
+            },
+            select: {
+                title: true,
+                description: true,
+                content:true,
+                category: true,
+                published: true,
+                author: {
+                    select:{
+                        id: true,
+                        username: true,
+                        firstName: true,
+                        lastName: true,
+                        email: true
+                    }
+                },
+                createdAt: true
             }
         }); 
 
