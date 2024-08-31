@@ -2,7 +2,6 @@ import { Context } from "hono"
 import { createPrismaClient } from "../config/database";
 import { signupSchema, singinSchema } from "../types/zod";
 import { sign, verify, decode } from "hono/jwt";
-import { tokenExp } from "../utilities/timeUtil";
 import bcryptjs from 'bcryptjs'
 
 const signup = async(c: Context) => {
@@ -48,6 +47,10 @@ const signup = async(c: Context) => {
             }, 500); 
         }; 
 
+        const oneMonthInSeconds : number = 30 * 24 * 60 * 60;
+        const currentTime : number = Math.floor(Date.now() / 1000);
+        const tokenExp : number =  currentTime + oneMonthInSeconds; 
+
         const token = await sign({ email: user.email, id: user.id, exp: tokenExp }, JWT_SECRET); 
         if(!token){
             return c.json({
@@ -75,7 +78,7 @@ const signup = async(c: Context) => {
     }
 }; 
 
-const singin = async(c: Context) => {
+const signin = async(c: Context) => {
     const body = await c.req.json(); 
 
     try {
@@ -109,6 +112,10 @@ const singin = async(c: Context) => {
             return c.json({ message: "Incorrect password" },401); 
         }
 
+        const oneMonthInSeconds : number = 30 * 24 * 60 * 60;
+        const currentTime : number = Math.floor(Date.now() / 1000);
+        const tokenExp : number =  currentTime + oneMonthInSeconds; 
+
         const token = await sign({ email: user.email, id: user.id, exp: tokenExp }, JWT_SECRET); 
         if(!token){
             c.json({ message: "Failed to create token" }, 500);
@@ -136,5 +143,5 @@ const singin = async(c: Context) => {
 
 export {
     signup, 
-    singin,
+    signin,
 }; 
