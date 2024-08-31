@@ -12,6 +12,14 @@ export const singinSchema = z.object({
     password: string().trim()
 }); 
 
+export const userUpdateSchema = z.object({
+    username: z.string().trim().optional(),
+    email: z.string().trim().optional(),
+    firstName:  z.string().trim().optional(),
+    lastName:    z.string().trim().optional(),
+    age :  z.number().optional(),      
+})
+
 export const blogSchema = z.object({
     title: z.string().min(1).trim(),
     description: z.string().trim(),
