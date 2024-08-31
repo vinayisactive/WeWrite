@@ -35,18 +35,9 @@ model User {
   firstName   String?
   lastName    String?
   age         Int?
-  bio         Bio?
   blogs  Blog[]
   password    String
   createdAt   DateTime @default(now())
-}
-
-model Bio {
-  id          String      @id @default(uuid())
-  bio         String?
-  pronouns    Pronouns?
-  userId      String      @unique
-  user        User     @relation(fields: [userId], references: [id])
 }
 
 model Blog {
