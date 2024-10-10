@@ -7,7 +7,7 @@ export const authMiddleware = async(c: Context, next: Next) => {
 
         if(!token){
             return c.json({
-                message: "Authorization header is required",
+                message: "Token not found",
             },401); 
         }
 
