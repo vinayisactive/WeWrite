@@ -4,6 +4,7 @@ import { userUpdateSchema } from "../types/zod";
 
 const getUser = async(c: Context) => {
     const authUser = c.get('user'); 
+
     if(!authUser.id){
         return c.json({
             message: "Unauthorized user"

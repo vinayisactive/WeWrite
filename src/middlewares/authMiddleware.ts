@@ -1,22 +1,17 @@
 import { Context, Next } from "hono";
 import { verify } from "hono/jwt";
-import { currentTime } from "../utilities/timeUtil";
+import { getCookie } from "hono/cookie";
 
 export const authMiddleware = async(c: Context, next: Next) => {
-        const authorizationHeader  = c.req.header("authorization"); 
-        if(!authorizationHeader){
+        const token = getCookie(c, 'token')
+
+        if(!token){
             return c.json({
                 message: "Authorization header is required",
             },401); 
         }
 
-        const token  = authorizationHeader.split(' ')[1]; 
-        if(!token){
-            return c.json({
-                message: "Authorization token is required",
-            },401); 
-        }
-
+        const currentTime : number = Math.floor(Date.now() / 1000);
     try {
         const decodedToken = await verify(token, c.env.JWT_SECRET); 
         if (decodedToken.exp && decodedToken.exp < currentTime) {

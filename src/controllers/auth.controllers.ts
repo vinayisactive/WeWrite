@@ -3,6 +3,7 @@ import { createPrismaClient } from "../config/database";
 import { signupSchema, singinSchema } from "../types/zod";
 import { sign, verify, decode } from "hono/jwt";
 import bcryptjs from 'bcryptjs'
+import { setCookie } from "hono/cookie";
 
 const signup = async(c: Context) => {
     const body = await c.req.json(); 
@@ -120,6 +121,13 @@ const signin = async(c: Context) => {
         if(!token){
             c.json({ message: "Failed to create token" }, 500);
         }
+
+        setCookie(c, "token", token, {
+            secure: true, 
+            httpOnly: true, 
+            sameSite: 'none',
+            expires:  new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+        }); 
 
         return c.json({
             message: "User signin successfully",
